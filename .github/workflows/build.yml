@@ -12,7 +12,7 @@ jobs:
     env:
       GAME_VERSION: FIRERED
       GAME_LANGUAGE: ENGLISH
-      COMPARE: 0 # On met 0 pour que Sketchware reçoive la ROM même si tu fais des modifs
+      COMPARE: 0 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,13 +35,14 @@ jobs:
       - name: Build FireRed
         run: |
           make clean
-          make -j2 # On limite à 2 pour éviter le crash de pokemon.o
+          make -j2 
 
       - name: Upload Artifact
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: PokeFireRed
+          # Si Sketchware envoie une version, on l'utilise, sinon on utilise le numéro de build GitHub
+          name: PokeFireRed_${{ github.event.client_payload.version || github.run_number }}
           path: "**/*.gba"
           if-no-files-found: error
           
